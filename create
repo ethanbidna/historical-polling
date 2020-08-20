@@ -1,0 +1,72 @@
+import pandas as pd
+%matplotlib inline
+import matplotlib as mpl 
+import matplotlib.pyplot as plt
+plt.style.use('seaborn-whitegrid')
+import numpy as np
+
+
+
+
+polling_data_raw = pd.read_csv(r'/Users/ethanbidna/Dropbox/Data Science/Coding Files/Jupyter Notebook Files/Polling Data Project/pres_pollaverages_1968-2016.csv',parse_dates= ['modeldate'])
+polling_data_raw = polling_data_raw[polling_data_raw['state'] == 'National']
+polling_data_raw['election_date'] = pd.to_datetime(polling_data_raw['election_date'])
+polling_data_raw['days_until_election'] = polling_data_raw.election_date - polling_data_raw.modeldate
+polling_data_raw['days_until_election'] = polling_data_raw['days_until_election'].dt.days
+polling_data_raw = polling_data_raw[['cycle', 'modeldate','candidate_name','candidate_id','pct_trend_adjusted','election_date', 'days_until_election']]
+
+election_2016 = polling_data_raw[polling_data_raw['cycle'] == 2016]
+election_2012 = polling_data_raw[polling_data_raw['cycle'] == 2012]
+election_2008 = polling_data_raw[polling_data_raw['cycle'] == 2008]
+election_2004 = polling_data_raw[polling_data_raw['cycle'] == 2004]
+election_2000 = polling_data_raw[polling_data_raw['cycle'] == 2000]
+election_1996 = polling_data_raw[polling_data_raw['cycle'] == 1996]
+election_1992 = polling_data_raw[polling_data_raw['cycle'] == 1992]
+election_1988 = polling_data_raw[polling_data_raw['cycle'] == 1988]
+election_1984 = polling_data_raw[polling_data_raw['cycle'] == 1984]
+election_1980 = polling_data_raw[polling_data_raw['cycle'] == 1980]
+election_1976 = polling_data_raw[polling_data_raw['cycle'] == 1976]
+election_1972 = polling_data_raw[polling_data_raw['cycle'] == 1972]
+election_1968 = polling_data_raw[polling_data_raw['cycle'] == 1968]
+
+
+election_2016_trump = election_2016[election_2016['candidate_name']== 'Donald Trump']
+election_2012_obama = election_2012[election_2012['candidate_name']== 'Barack Obama']
+election_2008_obama = election_2008[election_2008['candidate_name']== 'Barack Obama']
+election_2004_bush = election_2004[election_2004['candidate_name']== 'George W. Bush']
+election_2000_bush = election_2000[election_2000['candidate_name']== 'George W. Bush']
+election_1996_clinton = election_1996[election_1996['candidate_name']== 'Bill Clinton']
+election_1992_clinton = election_1992[election_1992['candidate_name']== 'Bill Clinton']
+election_1988_bush = election_1988[election_1988['candidate_name']== 'George Bush']
+election_1984_reagan = election_1984[election_1984['candidate_name']== 'Ronald Reagan']
+election_1980_reagan = election_1980[election_1980['candidate_name']== 'Ronald Reagan']
+election_1976_carter = election_1976[election_1976['candidate_name']== 'Jimmy Carter']
+election_1972_nixon = election_1972[election_1972['candidate_name']== 'Richard M. Nixon']
+election_1968_nixon = election_1968[election_1968['candidate_name']== 'Richard M. Nixon']
+
+import plotly.graph_objects as go
+
+trace_2016 = go.Scatter(
+                x = election_2016_trump.days_until_election,
+                y = election_2016_trump.pct_trend_adjusted,
+                mode = "lines",
+                name = '2016')
+
+trace_2012 = go.Scatter(
+                x = election_2012_obama.days_until_election,
+                y = election_2012_obama.pct_trend_adjusted,
+                mode = "lines",
+                name = '2012')
+
+data = [trace_2016, trace_2012]
+
+layout = go.Layout(
+                title = "Historical Presidential Polling Averages", 
+                xaxis = dict(title = "Days Before Election", autorange = "reversed"),
+                yaxis = dict(title = "Polling Average"))
+
+fig = go.Figure(data = data, layout = layout)
+
+
+fig.show()
+
