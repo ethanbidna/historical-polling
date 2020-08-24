@@ -12,6 +12,14 @@ polling_data_raw['days_until_election'] = polling_data_raw.election_date - polli
 polling_data_raw['days_until_election'] = polling_data_raw['days_until_election'].dt.days
 polling_data_raw = polling_data_raw[['cycle', 'modeldate','candidate_name','candidate_id','pct_trend_adjusted','election_date', 'days_until_election']]
 
+polling_2020_raw = pd.read_csv(r'/Users/ethanbidna/Dropbox/Data Science/Coding Files/Jupyter Notebook Files/Polling Data Project/presidential_poll_averages_2020.csv',parse_dates= ['modeldate'])
+polling_2020_raw = polling_2020_raw[polling_2020_raw['state'] == 'National']
+polling_2020_raw['election_date'] = pd.to_datetime('11/03/2020')
+polling_2020_raw['days_until_election'] = polling_2020_raw.election_date - polling_2020_raw.modeldate
+polling_2020_raw['days_until_election'] = polling_2020_raw['days_until_election'].dt.days
+polling_2020_raw = polling_2020_raw[['cycle', 'modeldate','candidate_name','pct_trend_adjusted','election_date', 'days_until_election']]
+
+
 election_2016 = polling_data_raw[polling_data_raw['cycle'] == 2016]
 election_2012 = polling_data_raw[polling_data_raw['cycle'] == 2012]
 election_2008 = polling_data_raw[polling_data_raw['cycle'] == 2008]
@@ -25,6 +33,10 @@ election_1980 = polling_data_raw[polling_data_raw['cycle'] == 1980]
 election_1976 = polling_data_raw[polling_data_raw['cycle'] == 1976]
 election_1972 = polling_data_raw[polling_data_raw['cycle'] == 1972]
 election_1968 = polling_data_raw[polling_data_raw['cycle'] == 1968]
+
+#2020 Election
+election_2020_biden = polling_2020_raw[polling_2020_raw['candidate_name']== 'Joseph R. Biden Jr.']
+election_2020_trump = polling_2020_raw[polling_2020_raw['candidate_name']== 'Donald Trump']
 
 #winners
 election_2016_trump = election_2016[election_2016['candidate_name']== 'Donald Trump']
@@ -56,189 +68,226 @@ election_1976_ford = election_1976[election_1976['candidate_name']== 'Gerald R. 
 election_1972_mcgovern = election_1972[election_1972['candidate_name']== 'George S. McGovern']
 election_1968_humphrey = election_1968[election_1968['candidate_name']== 'Hubert Humphrey, Jr.']
 
+election_2020_spread = pd.merge(election_2020_biden,election_2020_trump, on = 'days_until_election')
+election_2020_spread['polling_spread'] = election_2020_spread['pct_trend_adjusted_x'] - election_2020_spread['pct_trend_adjusted_y']
+election_2020_spread = election_2020_spread[['cycle_x','modeldate_x','election_date_x','days_until_election','polling_spread']]
+election_2020_spread.rename(columns={"cycle_x": "cylce", "modeldate_x": "modeldate"})
+election_2020_spread['polling_spread'] = election_2020_spread['polling_spread'].round(decimals = 2)
+
 election_2016_spread = pd.merge(election_2016_trump,election_2016_clinton, on = 'days_until_election')
 election_2016_spread['polling_spread'] = election_2016_spread['pct_trend_adjusted_x'] - election_2016_spread['pct_trend_adjusted_y']
 election_2016_spread = election_2016_spread[['cycle_x','modeldate_x','election_date_x','days_until_election','polling_spread']]
 election_2016_spread.rename(columns={"cycle_x": "cylce", "modeldate_x": "modeldate"})
+election_2016_spread['polling_spread'] = election_2016_spread['polling_spread'].round(decimals = 2)
 
 election_2012_spread = pd.merge(election_2012_obama,election_2012_romney, on = 'days_until_election')
 election_2012_spread['polling_spread'] = election_2012_spread['pct_trend_adjusted_x'] - election_2012_spread['pct_trend_adjusted_y']
 election_2012_spread = election_2012_spread[['cycle_x','modeldate_x','election_date_x','days_until_election','polling_spread']]
 election_2012_spread.rename(columns={"cycle_x": "cylce", "modeldate_x": "modeldate"})
+election_2012_spread['polling_spread'] = election_2012_spread['polling_spread'].round(decimals = 2)
 
 election_2008_spread = pd.merge(election_2008_obama,election_2008_mccain, on = 'days_until_election')
 election_2008_spread['polling_spread'] = election_2008_spread['pct_trend_adjusted_x'] - election_2008_spread['pct_trend_adjusted_y']
 election_2008_spread = election_2008_spread[['cycle_x','modeldate_x','election_date_x','days_until_election','polling_spread']]
 election_2008_spread.rename(columns={"cycle_x": "cylce", "modeldate_x": "modeldate"})
+election_2008_spread['polling_spread'] = election_2008_spread['polling_spread'].round(decimals = 2)
 
 election_2004_spread = pd.merge(election_2004_bush,election_2004_kerry, on = 'days_until_election')
 election_2004_spread['polling_spread'] = election_2004_spread['pct_trend_adjusted_x'] - election_2004_spread['pct_trend_adjusted_y']
 election_2004_spread = election_2004_spread[['cycle_x','modeldate_x','election_date_x','days_until_election','polling_spread']]
 election_2004_spread.rename(columns={"cycle_x": "cylce", "modeldate_x": "modeldate"})
+election_2004_spread['polling_spread'] = election_2004_spread['polling_spread'].round(decimals = 2)
 
 election_2000_spread = pd.merge(election_2000_bush,election_2000_gore, on = 'days_until_election')
 election_2000_spread['polling_spread'] = election_2000_spread['pct_trend_adjusted_x'] - election_2000_spread['pct_trend_adjusted_y']
 election_2000_spread = election_2000_spread[['cycle_x','modeldate_x','election_date_x','days_until_election','polling_spread']]
 election_2000_spread.rename(columns={"cycle_x": "cylce", "modeldate_x": "modeldate"})
+election_2000_spread['polling_spread'] = election_2000_spread['polling_spread'].round(decimals = 2)
 
 election_1996_spread = pd.merge(election_1996_clinton,election_1996_dole, on = 'days_until_election')
 election_1996_spread['polling_spread'] = election_1996_spread['pct_trend_adjusted_x'] - election_1996_spread['pct_trend_adjusted_y']
 election_1996_spread = election_1996_spread[['cycle_x','modeldate_x','election_date_x','days_until_election','polling_spread']]
 election_1996_spread.rename(columns={"cycle_x": "cylce", "modeldate_x": "modeldate"})
+election_1996_spread['polling_spread'] = election_1996_spread['polling_spread'].round(decimals = 2)
 
 election_1992_spread = pd.merge(election_1992_clinton,election_1992_bush, on = 'days_until_election')
 election_1992_spread['polling_spread'] = election_1992_spread['pct_trend_adjusted_x'] - election_1992_spread['pct_trend_adjusted_y']
 election_1992_spread = election_1992_spread[['cycle_x','modeldate_x','election_date_x','days_until_election','polling_spread']]
 election_1992_spread.rename(columns={"cycle_x": "cylce", "modeldate_x": "modeldate"})
+election_1992_spread['polling_spread'] = election_1992_spread['polling_spread'].round(decimals = 2)
 
 election_1988_spread = pd.merge(election_1988_bush,election_1988_dukakis, on = 'days_until_election')
 election_1988_spread['polling_spread'] = election_1988_spread['pct_trend_adjusted_x'] - election_1988_spread['pct_trend_adjusted_y']
 election_1988_spread = election_1988_spread[['cycle_x','modeldate_x','election_date_x','days_until_election','polling_spread']]
 election_1988_spread.rename(columns={"cycle_x": "cylce", "modeldate_x": "modeldate"})
+election_1988_spread['polling_spread'] = election_1988_spread['polling_spread'].round(decimals = 2)
 
 election_1984_spread = pd.merge(election_1984_reagan,election_1984_mondale, on = 'days_until_election')
 election_1984_spread['polling_spread'] = election_1984_spread['pct_trend_adjusted_x'] - election_1984_spread['pct_trend_adjusted_y']
 election_1984_spread = election_1984_spread[['cycle_x','modeldate_x','election_date_x','days_until_election','polling_spread']]
 election_1984_spread.rename(columns={"cycle_x": "cylce", "modeldate_x": "modeldate"})
+election_1984_spread['polling_spread'] = election_1984_spread['polling_spread'].round(decimals = 2)
 
 election_1980_spread = pd.merge(election_1980_reagan,election_1980_carter, on = 'days_until_election')
 election_1980_spread['polling_spread'] = election_1980_spread['pct_trend_adjusted_x'] - election_1980_spread['pct_trend_adjusted_y']
 election_1980_spread = election_1980_spread[['cycle_x','modeldate_x','election_date_x','days_until_election','polling_spread']]
 election_1980_spread.rename(columns={"cycle_x": "cylce", "modeldate_x": "modeldate"})
+election_1980_spread['polling_spread'] = election_1980_spread['polling_spread'].round(decimals = 2)
 
 election_1976_spread = pd.merge(election_1976_carter,election_1976_ford, on = 'days_until_election')
 election_1976_spread['polling_spread'] = election_1976_spread['pct_trend_adjusted_x'] - election_1976_spread['pct_trend_adjusted_y']
 election_1976_spread = election_1976_spread[['cycle_x','modeldate_x','election_date_x','days_until_election','polling_spread']]
 election_1976_spread.rename(columns={"cycle_x": "cylce", "modeldate_x": "modeldate"})
+election_1976_spread['polling_spread'] = election_1976_spread['polling_spread'].round(decimals = 2)
 
 election_1972_spread = pd.merge(election_1972_nixon,election_1972_mcgovern, on = 'days_until_election')
 election_1972_spread['polling_spread'] = election_1972_spread['pct_trend_adjusted_x'] - election_1972_spread['pct_trend_adjusted_y']
 election_1972_spread = election_1972_spread[['cycle_x','modeldate_x','election_date_x','days_until_election','polling_spread']]
 election_1972_spread.rename(columns={"cycle_x": "cylce", "modeldate_x": "modeldate"})
+election_1972_spread['polling_spread'] = election_1972_spread['polling_spread'].round(decimals = 2)
 
 election_1968_spread = pd.merge(election_1968_nixon,election_1968_humphrey, on = 'days_until_election')
 election_1968_spread['polling_spread'] = election_1968_spread['pct_trend_adjusted_x'] - election_1968_spread['pct_trend_adjusted_y']
 election_1968_spread = election_1968_spread[['cycle_x','modeldate_x','election_date_x','days_until_election','polling_spread']]
 election_1968_spread.rename(columns={"cycle_x": "cylce", "modeldate_x": "modeldate"})
-
+election_1968_spread['polling_spread'] = election_1968_spread['polling_spread'].round(decimals = 2)
 
 import plotly.graph_objects as go
 
-trace_2016 = go.Scatter(
-                x = election_2016_trump.days_until_election,
-                y = election_2016_trump.pct_trend_adjusted,
+biden_2020 = go.Scatter(
+                x = election_2020_spread.days_until_election,
+                y = election_2020_spread.polling_spread,
+                mode = "lines",
+                name = 'Biden 2020',
+                visible = "legendonly",
+                line=dict(color="purple", width = 7))
+
+trump_2016 = go.Scatter(
+                x = election_2016_spread.days_until_election,
+                y = election_2016_spread.polling_spread,
                 mode = "lines",
                 name = 'Trump 2016',
-                visible = "legendonly")
+                visible = "legendonly",
+                line=dict(color="red"))
 
-trace_2012 = go.Scatter(
-                x = election_2012_obama.days_until_election,
-                y = election_2012_obama.pct_trend_adjusted,
+
+obama_2012 = go.Scatter(
+                x = election_2012_spread.days_until_election,
+                y = election_2012_spread.polling_spread,
                 mode = "lines",
                 name = 'Obama 2012',
-                visible = "legendonly")
+                visible = "legendonly",
+                line=dict(color="blue"))
 
 
-trace_2008 = go.Scatter(
-                x = election_2008_obama.days_until_election,
-                y = election_2008_obama.pct_trend_adjusted,
+obama_2008 = go.Scatter(
+                x = election_2008_spread.days_until_election,
+                y = election_2008_spread.polling_spread,
                 mode = "lines",
                 name = 'Obama 2008',
-                visible = "legendonly")
+                visible = "legendonly",
+                line=dict(color="blue"))
 
-
-trace_2004 = go.Scatter(
-                x = election_2004_bush.days_until_election,
-                y = election_2004_bush.pct_trend_adjusted,
+bush_2004 = go.Scatter(
+                x = election_2004_spread.days_until_election,
+                y = election_2004_spread.polling_spread,
                 mode = "lines",
                 name = 'Bush 2004',
-                visible = "legendonly")
+                visible = "legendonly",
+                line=dict(color="red"))
 
-
-trace_2000 = go.Scatter(
-                x = election_2000_bush.days_until_election,
-                y = election_2000_bush.pct_trend_adjusted,
+bush_2000 = go.Scatter(
+                x = election_2000_spread.days_until_election,
+                y = election_2000_spread.polling_spread,
                 mode = "lines",
                 name = 'Bush 2000',
-                visible = "legendonly")
+                visible = "legendonly",
+                line=dict(color="red"))
 
 
-trace_1996 = go.Scatter(
-                x = election_1996_clinton.days_until_election,
-                y = election_1996_clinton.pct_trend_adjusted,
+clinton_1996 = go.Scatter(
+                x = election_1996_spread.days_until_election,
+                y = election_1996_spread.polling_spread,
                 mode = "lines",
                 name = 'Clinton 1996',
-                visible = "legendonly")
+                visible = "legendonly",
+                line=dict(color="blue"))
 
-
-trace_1992 = go.Scatter(
-                x = election_1992_clinton.days_until_election,
-                y = election_1992_clinton.pct_trend_adjusted,
+clinton_1992 = go.Scatter(
+                x = election_1992_spread.days_until_election,
+                y = election_1992_spread.polling_spread,
                 mode = "lines",
                 name = 'Clinton 1992',
-                visible = "legendonly")
+                visible = "legendonly",
+                line=dict(color="blue"))
 
-
-trace_1988 = go.Scatter(
-                x = election_1988_bush.days_until_election,
-                y = election_1988_bush.pct_trend_adjusted,
+bush_1988 = go.Scatter(
+                x = election_1988_spread.days_until_election,
+                y = election_1988_spread.polling_spread,
                 mode = "lines",
                 name = 'Bush 1988',
-                visible = "legendonly")
+                visible = "legendonly",
+                line=dict(color="red"))
 
-
-trace_1984 = go.Scatter(
-                x = election_1984_reagan.days_until_election,
-                y = election_1984_reagan.pct_trend_adjusted,
+reagan_1984 = go.Scatter(
+                x = election_1984_spread.days_until_election,
+                y = election_1984_spread.polling_spread,
                 mode = "lines",
                 name = 'Reagan 1984',
-                visible = "legendonly")
+                visible = "legendonly",
+                line=dict(color="red"))
 
-
-trace_1980 = go.Scatter(
-                x = election_1980_reagan.days_until_election,
-                y = election_1980_reagan.pct_trend_adjusted,
+reagan_1980 = go.Scatter(
+                x = election_1980_spread.days_until_election,
+                y = election_1980_spread.polling_spread,
                 mode = "lines",
                 name = 'Reagan 1980',
-                visible = "legendonly")
+                visible = "legendonly",
+                line=dict(color="red"))
 
 
-trace_1976 = go.Scatter(
-                x = election_1976_carter.days_until_election,
-                y = election_1976_carter.pct_trend_adjusted,
+carter_1976 = go.Scatter(
+                x = election_1976_spread.days_until_election,
+                y = election_1976_spread.polling_spread,
                 mode = "lines",
                 name = 'Carter 1976',
-                visible = "legendonly")
+                visible = "legendonly",
+                line=dict(color="blue"))
 
 
-trace_1972 = go.Scatter(
-                x = election_1972_nixon.days_until_election,
-                y = election_1972_nixon.pct_trend_adjusted,
+nixon_1972 = go.Scatter(
+                x = election_1972_spread.days_until_election,
+                y = election_1972_spread.polling_spread,
                 mode = "lines",
                 name = 'Nixon 1972',
-                visible = "legendonly")
+                visible = "legendonly",
+                line=dict(color="red"))
 
 
-trace_1968 = go.Scatter(
-                x = election_1968_nixon.days_until_election,
-                y = election_1968_nixon.pct_trend_adjusted,
+nixon_1968 = go.Scatter(
+                x = election_1968_spread.days_until_election,
+                y = election_1968_spread.polling_spread,
                 mode = "lines",
                 name = 'Nixon 1968',
-                visible = "legendonly")
+                visible = "legendonly",
+                line=dict(color="red"))
 
 
 
-
-
-data = [trace_2016, trace_2012, trace_2008,trace_2004, trace_2000, trace_1996, trace_1992, trace_1988, trace_1984, trace_1980, trace_1976, trace_1972, trace_1968]
+#create data field
+data = [biden_2020, trump_2016, obama_2012, obama_2008, bush_2004,bush_2000,clinton_1996,clinton_1992,
+       bush_1988,reagan_1984,reagan_1980,carter_1976, nixon_1972,nixon_1968]
 
 layout = go.Layout(
-                title = "Historical Presidential Polling Averages", 
+                title = "Historical Presidential Polling Average Spread", 
                 xaxis = dict(title = "Days Before Election", autorange = "reversed"),
-                yaxis = dict(title = "Polling Average"),
+                yaxis = dict(title = "Polling Spread"),
                 updatemenus=[dict(buttons=list([
                 dict(visible = True,  args=[{'visible': [True]}],label='All', method='restyle'),
-                dict(visible = True,  args=[{'visible': [True, True, True, True, True, False, False, False, False, False, False, False, False]}],label='Modern Era', method='restyle')
+                dict(visible = True, args=[{'visible': [True, True, True, True, True, True, False, False, False, False, False, False, False, False]}],label='Modern Era', method='restyle'),
+                dict(visible = True, args=[{'visible': [True, False, True, True, False, False, True, True, False, False, False, True, False, False]}],label='Democrats Only', method='restyle'),
+                dict(visible = True, args=[{'visible': [True, True, False, False, True, True, False, False, True, True, True, False, True, True]}],label='GOP Only', method='restyle')
+
                 ]))])
 
 fig = go.Figure(data = data, layout = layout)
