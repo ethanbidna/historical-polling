@@ -294,3 +294,4 @@ fig = go.Figure(data = data, layout = layout)
 
 
 fig.show()
+fig.write_html(r'/Users/ethanbidna/Dropbox/Data Science/Coding Files/Jupyter Notebook Files/Polling Data Project/polling_output.html')
