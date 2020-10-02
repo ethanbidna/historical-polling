@@ -5,14 +5,15 @@ import matplotlib.pyplot as plt
 plt.style.use('seaborn-whitegrid')
 import numpy as np
 
-polling_data_raw = pd.read_csv(r'/Users/ethanbidna/Dropbox/Data Science/Coding Files/Jupyter Notebook Files/Polling Data Project/pres_pollaverages_1968-2016.csv',parse_dates= ['modeldate'])
+historical_url = 'https://raw.githubusercontent.com/fivethirtyeight/data/master/polls/pres_pollaverages_1968-2016.csv'
+polling_data_raw = pd.read_csv(historical_url,parse_dates= ['modeldate'])
 polling_data_raw = polling_data_raw[polling_data_raw['state'] == 'National']
 polling_data_raw['election_date'] = pd.to_datetime(polling_data_raw['election_date'])
 polling_data_raw['days_until_election'] = polling_data_raw.election_date - polling_data_raw.modeldate
 polling_data_raw['days_until_election'] = polling_data_raw['days_until_election'].dt.days
 polling_data_raw = polling_data_raw[['cycle', 'modeldate','candidate_name','candidate_id','pct_trend_adjusted','election_date', 'days_until_election']]
 
-polling_2020_raw = pd.read_csv(r'/Users/ethanbidna/Dropbox/Data Science/Coding Files/Jupyter Notebook Files/Polling Data Project/presidential_poll_averages_2020.csv',parse_dates= ['modeldate'])
+polling_2020_raw = pd.read_csv(r'/Users/ethanbidna/Dropbox/Data Science/Data Projects/Polling Data Project/presidential_poll_averages_2020.csv',parse_dates= ['modeldate'])
 polling_2020_raw = polling_2020_raw[polling_2020_raw['state'] == 'National']
 polling_2020_raw['election_date'] = pd.to_datetime('11/03/2020')
 polling_2020_raw['days_until_election'] = polling_2020_raw.election_date - polling_2020_raw.modeldate
@@ -152,6 +153,12 @@ election_1968_spread = election_1968_spread[['cycle_x','modeldate_x','election_d
 election_1968_spread.rename(columns={"cycle_x": "cylce", "modeldate_x": "modeldate"})
 election_1968_spread['polling_spread'] = election_1968_spread['polling_spread'].round(decimals = 2)
 
+clinton_2016_spread = pd.merge(election_2016_clinton,election_2016_trump, on = 'days_until_election')
+clinton_2016_spread['polling_spread'] = clinton_2016_spread['pct_trend_adjusted_x'] - clinton_2016_spread['pct_trend_adjusted_y']
+clinton_2016_spread = clinton_2016_spread[['cycle_x','modeldate_x','election_date_x','days_until_election','polling_spread']]
+clinton_2016_spread.rename(columns={"cycle_x": "cylce", "modeldate_x": "modeldate"})
+clinton_2016_spread['polling_spread'] = clinton_2016_spread['polling_spread'].round(decimals = 2)
+
 import plotly.graph_objects as go
 
 biden_2020 = go.Scatter(
@@ -272,21 +279,30 @@ nixon_1968 = go.Scatter(
                 visible = "legendonly",
                 line=dict(color="red"))
 
+clinton_2016 = go.Scatter(
+                x = clinton_2016_spread.days_until_election,
+                y = clinton_2016_spread.polling_spread,
+                mode = "lines",
+                name = 'Clinton 2016',
+                visible = "legendonly",
+                line=dict(color="blue"))
+
 
 
 #create data field
 data = [biden_2020, trump_2016, obama_2012, obama_2008, bush_2004,bush_2000,clinton_1996,clinton_1992,
-       bush_1988,reagan_1984,reagan_1980,carter_1976, nixon_1972,nixon_1968]
+       bush_1988,reagan_1984,reagan_1980,carter_1976, nixon_1972,nixon_1968, clinton_2016]
 
 layout = go.Layout(
                 title = "Historical Presidential Polling Average Spread", 
                 xaxis = dict(title = "Days Before Election", autorange = "reversed"),
                 yaxis = dict(title = "Polling Spread"),
                 updatemenus=[dict(buttons=list([
-                dict(visible = True,  args=[{'visible': [True]}],label='All', method='restyle'),
-                dict(visible = True, args=[{'visible': [True, True, True, True, True, True, False, False, False, False, False, False, False, False]}],label='Modern Era', method='restyle'),
-                dict(visible = True, args=[{'visible': [True, False, True, True, False, False, True, True, False, False, False, True, False, False]}],label='Democrats Only', method='restyle'),
-                dict(visible = True, args=[{'visible': [True, True, False, False, True, True, False, False, True, True, True, False, True, True]}],label='GOP Only', method='restyle')
+                dict(visible = True,  args=[{'visible': [True, True, True, True, True, True, True, True, True, True, True, True, True, True, False]}],label='All', method='restyle'),
+                dict(visible = True, args=[{'visible': [True, False, False, False, False, False, False, False, False, False, False, False, False, False, True]}],label='Biden 2020 vs. Clinton 2016', method='restyle'),
+                dict(visible = True, args=[{'visible': [True, True, True, True, True, True, False, False, False, False, False, False, False, False, False]}],label='Modern Era', method='restyle'),
+                dict(visible = True, args=[{'visible': [True, False, True, True, False, False, True, True, False, False, False, True, False, False,False]}],label='Democrats Only', method='restyle'),
+                dict(visible = True, args=[{'visible': [True, True, False, False, True, True, False, False, True, True, True, False, True, True, False]}],label='GOP Only', method='restyle')
 
                 ]))])
 
@@ -294,4 +310,4 @@ fig = go.Figure(data = data, layout = layout)
 
 
 fig.show()
-fig.write_html(r'/Users/ethanbidna/Dropbox/Data Science/Coding Files/Jupyter Notebook Files/Polling Data Project/polling_output.html')
+fig.write_html(r'/Users/ethanbidna/Dropbox/Data Science/Data Projects/Polling Data Project/polling_output.html')
